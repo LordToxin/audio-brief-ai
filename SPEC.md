@@ -1,30 +1,27 @@
-# SPEC: AudioBrief AI — High-Performance Audio Transcription & Executive Summarizer Micro-SaaS API
+# Product Specification: AudioBrief AI (Speech-to-Summary Micro-SaaS API)
 
-## 1. Executive Summary
-**AudioBrief AI** is a production-grade FastAPI micro-service and turn-key Micro-SaaS backend for audio transcription, executive summary synthesis, meeting action-item extraction, and asynchronous webhook delivery. It provides an immediate alternative to expensive commercial meeting intelligence solutions (Otter.ai, Fireflies, Descript) with self-hosted control and zero cold-start dependencies.
+## 1. Executive Summary & Value Proposition
+**AudioBrief AI** is an asynchronous audio transcription and executive briefing engine built on FastAPI, aiosqlite, and OpenAI Whisper/GPT. It ingests audio recordings (MP3, WAV, M4A, OGG, WebM), generates structured executive summaries, extracts actionable tasks with priority assignments, and dispatches real-time webhooks.
 
-## 2. Technical Stack & Architecture
-- **Framework**: Python 3.11+, FastAPI (Async ASGI), Uvicorn.
-- **Database**: Async SQLite (`aiosqlite`) with WAL mode for high concurrency.
-- **AI / Speech-to-Text Engine**: Dual-mode transcription:
-  - OpenAI Whisper API (production cloud mode)
-  - Intelligent local heuristic extractor fallback (zero cold-start, 100% offline testable)
-- **Security & Multi-Tenancy**:
-  - API Key authentication via `X-API-Key` headers.
-  - Per-key quota throttling and monthly usage tracking.
-  - Role-based separation (Master Admin key vs Client API keys).
-- **Background Tasks & Webhooks**:
-  - Asynchronous background worker queue.
-  - HTTP Webhook callbacks with JSON payload and retry logic.
-- **Containerization**: Multi-stage Dockerfile and `docker-compose.yml`.
+## 2. Target Market
+- **B2B SaaS Founders & Product Teams**: Summarizing client discovery calls and sprint planning sessions.
+- **Consultancies & Recruitment Agencies**: Generating structured interview debriefs and client proposals.
+- **Developers & Integrators**: White-label transcription and intelligence API with ready-made API key management.
 
-## 3. API Endpoints
-- `GET /health`: Health status and system uptime.
-- `POST /api/v1/auth/keys`: Multi-tenant client API key generation with tier and monthly quota assignment.
-- `POST /api/v1/transcribe`: Asynchronous file ingestion (`mp3`, `wav`, `m4a`, `ogg`) returning `202 Accepted` with `job_id`.
-- `GET /api/v1/transcribe/{job_id}`: Job status polling, transcription text, action items, sentiment analysis, and topic tags.
+## 3. Architecture & API Endpoints
+- `POST /api/v1/auth/keys`: Provision new API keys with configurable rate limits.
+- `GET /api/v1/auth/keys`: List active API keys and usage statistics.
+- `POST /api/v1/transcribe`: Ingest audio file (multiform), enqueue background transcription and summary synthesis.
+- `GET /api/v1/jobs/{job_id}`: Poll status and retrieve structured briefing results.
+- `GET /health`: System healthcheck and status monitoring.
 
-## 4. Monetization Strategy
-- **Micro-SaaS API Subscription**: Starter ($19/mo, 100 min), Pro ($49/mo, 500 min), Business ($149/mo, 2,000 min).
-- **White-Label Enterprise License**: Turnkey deployment for legal, healthcare, or financial firms ($1,000 - $3,000 one-time + annual maintenance).
-- **CRM & Telegram Bot Integrations**: Voice memo transcription plugin for Telegram corporate groups and CRM voice call logging ($300 - $800 / integration).
+## 4. Technology Stack
+- **Framework**: FastAPI (Python 3.11+ / 3.13)
+- **Database**: Async SQLite (`aiosqlite`) with WAL mode
+- **Testing**: `pytest`, `pytest-asyncio`, `httpx`
+- **Containerization**: Minimal Alpine/Slim Docker image and Docker Compose
+
+## 5. Monetization Strategy
+- **Usage-Based API Billing**: $0.05/minute of processed audio.
+- **Monthly Subscription ($19 - $49/mo)**: Included quotas with priority worker queues.
+- **Self-Hosted Enterprise License ($499)**: Turnkey Docker Compose package for privacy-conscious enterprise deployments.
